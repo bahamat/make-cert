@@ -82,6 +82,7 @@ KEY_ALGO=prime256v1
 #LOCKFILE="${BASEDIR}/lock"
 
 # Certificate directory. (defalut: $BASEDIR/certs)
-CERTDIR=/opt/ssl/certs
+SSLBASE=/opt/ssl
+CERTDIR="$SSLBASE/certs"
 
 source config.local

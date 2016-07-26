@@ -71,10 +71,10 @@ function clean_challenge {
 
     echo "HOOK: ${FUNCNAME[*]}" >&2
     if [[ -f "${WELLKNOWN}/http-server.pid" ]]; then
-    SERVER_PID=$(cat "${WELLKNOWN}/http-server.pid")
-    kill "$SERVER_PID"
-    pwait "$SERVER_PID"
-    rm "${WELLKNOWN}/http-server.pid"
+        SERVER_PID=$(cat "${WELLKNOWN}/http-server.pid")
+        kill "$SERVER_PID"
+        pwait "$SERVER_PID"
+        rm "${WELLKNOWN}/http-server.pid"
     fi
     [[ -f "${WELLKNOWN}/${TOKEN_FILENAME}" ]] && rm "${WELLKNOWN:?}/${TOKEN_FILENAME:?}"
     true
@@ -104,13 +104,18 @@ function deploy_cert {
     #   Timestamp when the specified certificate was created.
 
     echo "HOOK: ${FUNCNAME[*]}" >&2
+
+    # Ensure we have a dhparam file
+    if ! [[ -f $SSLBASE/dhparam.pem ]]; then
+        openssl dhparam -out "$SSLBASE/dhparam.pem" -dsaparam 2048
+    fi
     for service in apache nginx; do
     if svcs -H "${service}" | grep ^online; then
-    printf 'Restarting %s...' "${service}"
-    svcadm restart "${service}"
-    printf 'done.\n'
+        printf 'Restarting %s...' "${service}"
+        svcadm restart "${service}"
+        printf 'done.\n'
     else
-    printf 'Service "%s" is not online, skipping.\n' "${service}"
+        printf 'Service "%s" is not online, skipping.\n' "${service}"
     fi
     done
 
