@@ -17,7 +17,7 @@ cert: dep config.local config hook.sh domains.txt
 	@PATH=$(PATH_OVERRIDE) ./.letsencrypt.sh/letsencrypt.sh -c
 
 distclean: clean
-	rm -rf .letsencrypt.sh
+	rm -rf .letsencrypt.sh node_modules
 
 clean:
 	rm -rf accounts certs private_key.json private_key.pem
