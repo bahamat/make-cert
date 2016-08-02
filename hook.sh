@@ -30,7 +30,7 @@ function deploy_challenge {
     #   TXT record. For HTTP validation it is the value that is expected
     #   be found in the $TOKEN_FILENAME file.
 
-    echo "HOOK: ${FUNCNAME[*]}" >&2
+    echo "HOOK: ${FUNCNAME[*]}"
     printf '%s' "${TOKEN_VALUE}" > "${WELLKNOWN:?}/${TOKEN_FILENAME:?}"
     cd "${WEBROOT}"
     #echo "${WELLKNOWN:?}/${TOKEN_FILENAME:?}"
@@ -69,7 +69,7 @@ function clean_challenge {
     #
     # The parameters are the same as for deploy_challenge.
 
-    echo "HOOK: ${FUNCNAME[*]}" >&2
+    echo "HOOK: ${FUNCNAME[*]}"
     if [[ -f "${WELLKNOWN}/http-server.pid" ]]; then
         SERVER_PID=$(cat "${WELLKNOWN}/http-server.pid")
         kill "$SERVER_PID"
@@ -103,7 +103,7 @@ function deploy_cert {
     # - TIMESTAMP
     #   Timestamp when the specified certificate was created.
 
-    echo "HOOK: ${FUNCNAME[*]}" >&2
+    echo "HOOK: ${FUNCNAME[*]}"
 
     # Ensure we have a dhparam file
     if ! [[ -f $SSLBASE/dhparam.pem ]]; then
@@ -140,7 +140,7 @@ function unchanged_cert {
     # - CHAINFILE
     #   The path of the file containing the intermediate certificate(s).
 
-    echo "HOOK: ${FUNCNAME[*]}" >&2
+    echo "HOOK: ${FUNCNAME[*]}"
 
 }
 
