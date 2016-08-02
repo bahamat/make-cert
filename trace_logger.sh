@@ -25,10 +25,10 @@ if [[ ${TRACE:-off} != off ]]; then
         PS4="${PS4}"'[\D{%FT%TZ}] ${BASH_SOURCE}:${LINENO}: '
         PS4="${PS4}"'${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
         export PS4
-        if [[ -n ${TRACE_LOG} ]]; then
+        if [[ ${TRACE_LOG:-none} != none ]]; then
             exec 4>>"${TRACE_LOG}"
             export BASH_XTRACEFD=4
-        elif [[ -n ${TRACE_FD} ]]; then
+        elif [[ ${TRACE_FD:-none} != none ]]; then
             export BASH_XTRACEFD=${TRACE_FD}
         fi
     fi
