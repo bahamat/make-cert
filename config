@@ -81,8 +81,13 @@ KEY_ALGO=prime256v1
 # Lockfile location, to prevent concurrent access (default: $BASEDIR/lock)
 #LOCKFILE="${BASEDIR}/lock"
 
-# Certificate directory. (defalut: $BASEDIR/certs)
+# My base for SSL certs
 SSLBASE=/opt/ssl
+
+# Certificate directory. (defalut: $BASEDIR/certs)
 CERTDIR="$SSLBASE/certs"
+
+# Account directory. (defalut: $BASEDIR/accounts)
+ACCOUNTDIR="$SSLBASE/accounts"
 
 source config.local
