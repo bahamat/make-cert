@@ -38,7 +38,7 @@ everything is packaged into the `Makefile` this is much simplified.
 
 This example job will run at 12:15 AM on Tuesdays.
 
-    15 0 * * 2 make -C /path/to/make-cert
+    15 0 * * 2 make -C /path/to/make-cert >> /var/log/make-cert.log 2>&1
 
 ## Enhancements
 
