@@ -1,13 +1,13 @@
 # make-cert
 
 `make-cert` is an opinionated certficate deployment system  wrapping
-[letsencrypt.sh][letsencrypt.sh].  While `letsencrypt.sh` is a high quality
+[dehydrated][dehydrated].  While `dehydrated` is a high quality
 [Let's Encrypt][letsencrypt] client, making sure `config` and `hook.sh` are
 deployed correctly each time became a hassle for me. I made this so that most
 choices are already made and each deployment can have the barest minimum
 individual configuration.
 
-[letsencrypt.sh]: https://github.com/bahamat/letsencrypt.sh
+[dehydrated]: https://github.com/bahamat/dehydrated
 [letsencrypt]: https://www.letsencrypt.org/
 
 ## Usage
@@ -15,11 +15,11 @@ individual configuration.
 1. Clone the repo
 2. Edit `config.local` to set your email address and change to the production
    API URL when ready.
-3. Add domains to `domains.txt`. See the [`letsencrypt.sh`
+3. Add domains to `domains.txt`. See the [`dehydrated`
    documentation][domains_doc] for details.
 4. Run `make cert`
 
-[domains_doc]: ../../../letsencrypt.sh/blob/master/docs/domains_txt.md
+[domains_doc]: ../../../dehydrated/blob/master/docs/domains_txt.md
 
 E.g.
 

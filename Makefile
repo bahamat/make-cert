@@ -5,23 +5,23 @@ FLAGS=
 
 all: cert
 
-dep: .letsencrypt.sh node_modules
+dep: .dehydrated node_modules
 	mkdir -p /opt/ssl /opt/www/letsencrypt/.well-known/acme-challenge
 
 node_modules:
-	npm install http-server
+	npm install --progress=false http-server
 
-.letsencrypt.sh:
-	git clone https://github.com/bahamat/letsencrypt.sh .letsencrypt.sh
+.dehydrated:
+	git clone https://github.com/bahamat/dehydrated .dehydrated
 
 cert: dep config.local config hook.sh domains.txt
-	@PATH=$(PATH_OVERRIDE) ./.letsencrypt.sh/letsencrypt.sh -c $(FLAGS)
+	@PATH=$(PATH_OVERRIDE) ./.dehydrated/dehydrated -c $(FLAGS)
 
 test:
 	true
 
 distclean: clean
-	rm -rf .letsencrypt.sh node_modules
+	rm -rf .dehydrated node_modules
 
 clean:
 	rm -rf accounts certs private_key.json private_key.pem
