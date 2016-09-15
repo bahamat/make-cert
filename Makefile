@@ -21,7 +21,9 @@ test: dep config.test config hook.sh domains.txt
 	@PATH=$(PATH_OVERRIDE) ./.dehydrated/dehydrated -c --config config.test -6 $(FLAGS)
 	openssl x509 -text -noout -in certs/$$(cat domains.txt)/cert.pem
 
-distclean: clean
+distclean: depclean clean
+
+depclean:
 	rm -rf .dehydrated node_modules
 
 clean:
