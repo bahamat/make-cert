@@ -1,4 +1,5 @@
-.letsencrypt.sh
+.dehydrated
+accounts
 certs
 config.local
 domains.txt

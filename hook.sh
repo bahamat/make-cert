@@ -145,6 +145,6 @@ function unchanged_cert {
 }
 
 # Get the global config variables
-source "${0%/*}/config"
+source "${CONFIG}"
 
 HANDLER=$1; shift; $HANDLER $@
