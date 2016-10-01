@@ -48,6 +48,9 @@ function deploy_challenge {
         SunOS)
             a=$(netstat -na -f inet | nawk '/.80.*LISTEN/ {if ($1~".80$") {print $1}}')
             ;;
+        Linux)
+            a=$(netstat -natl | awk '{if ($4~":80$") {print $4}}')
+            ;;
     esac
     if [[ -z $a ]]; then
         http-server ${PWD} -p 80 &
