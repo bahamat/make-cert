@@ -112,7 +112,7 @@ function deploy_cert {
     if ! [[ -f $SSLBASE/dhparam.pem ]]; then
         openssl dhparam -out "$SSLBASE/dhparam.pem" -dsaparam 2048
     fi
-    for service in apache nginx; do
+    for service in "${SERVICES[@]}"; do
     if svcs -H "${service}" | grep ^online; then
         printf 'Restarting %s...' "${service}"
         svcadm restart "${service}"
