@@ -1,4 +1,4 @@
-PATH_OVERRIDE=/usr/xpg4/bin:./node_modules/http-server/bin:/opt/local/bin:$(PATH)
+PATH_OVERRIDE=/usr/xpg4/bin:$(PWD)/node_modules/http-server/bin:/opt/local/bin:$(PATH)
 FLAGS=
 
 .PHONY: all cert dep clean test
