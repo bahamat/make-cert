@@ -10,6 +10,56 @@
 # Copyright 2016 Brian Bennett
 #
 
+function restart_service() {
+    local SERVICE="${1}"
+
+    # This hook is called once for each service to restart
+    #
+    # Parameters:
+    # - SERVICE
+    #   The service identifier to restart
+
+    uname_s=$(uname -s)
+    case "$uname_s" in
+        SunOS)
+            if svcs -H "${SERVICE}" | grep ^online; then
+                printf 'Restarting %s...' "${SERVICE}"
+                svcadm restart "${SERVICE}"
+                printf 'done.\n'
+            else
+                printf 'Service "%s" is not online, skipping.\n' "${service}"
+            fi
+            ;;
+        FreeBSD)
+            service "$SERVICE" restart
+            ;;
+        Linux)
+            # FFS.
+            # http://unix.stackexchange.com/q/18209/3309
+            if [[ -f "/etc/init.d/$SERVICE" ]]; then
+                # sysv-init, and compatible
+                "/etc/init.d/$SERVICE" restart
+            elif init --version =~ 'upstart'; then
+                # upstart, without sysv-init compatible scripts
+                service "$SERVICE" restart
+            elif command -v rc-service; then
+                # OpenRC
+                rc-service "$SERVICE" restart
+            elif systemctl is-active "$SERVICE"; then
+                # systemd
+                systemctl restart "$SERVICE"
+            else
+                printf 'Unknown Linux init style.  '
+                printf '%s not restarted.\n' "$SERVICE"
+            fi
+            ;;
+        *)
+            printf 'Restarting services not yet supported on %s.\n' "$uname_s"
+            ;;
+    esac
+
+}
+
 function deploy_challenge {
     local DOMAIN="${1}" TOKEN_FILENAME="${2}" TOKEN_VALUE="${3}"
 
@@ -113,13 +163,7 @@ function deploy_cert {
         openssl dhparam -out "$SSLBASE/dhparam.pem" -dsaparam 2048
     fi
     for service in "${SERVICES[@]}"; do
-    if svcs -H "${service}" | grep ^online; then
-        printf 'Restarting %s...' "${service}"
-        svcadm restart "${service}"
-        printf 'done.\n'
-    else
-        printf 'Service "%s" is not online, skipping.\n' "${service}"
-    fi
+        restart_service "$service"
     done
 
 }

@@ -1,0 +1,4 @@
+CA="$staging_ca"
+CONTACT_EMAIL="nobody@nowhere.edu"
+# These services will be restarted
+SERVICES=( nginx apache )
