@@ -18,6 +18,7 @@ cert: dep config.local config hook.sh domains.txt
 	@PATH=$(PATH_OVERRIDE) ./.dehydrated/dehydrated -c $(FLAGS)
 
 test: dep config.test config hook.sh domains.txt
+	@shellcheck hook.sh
 	@PATH=$(PATH_OVERRIDE) ./.dehydrated/dehydrated -c --config config.test -6 $(FLAGS)
 	openssl x509 -text -noout -in certs/$$(cat domains.txt)/cert.pem
 

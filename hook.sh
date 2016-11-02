@@ -82,7 +82,7 @@ function deploy_challenge {
 
     echo "HOOK: ${FUNCNAME[*]}"
     printf '%s' "${TOKEN_VALUE}" > "${WELLKNOWN:?}/${TOKEN_FILENAME:?}"
-    cd "${WEBROOT}"
+    cd "${WEBROOT}" || exit
     #echo "${WELLKNOWN:?}/${TOKEN_FILENAME:?}"
     # Should we spawn a listener?
     # If netstat reports a listner on port 80 it will be stored in $a.
@@ -103,7 +103,7 @@ function deploy_challenge {
             ;;
     esac
     if [[ -z $a ]]; then
-        http-server ${PWD} -p 80 &
+        http-server "${PWD}" -p 80 &
         # Store the PID to kill it in clean_challenge.
         printf '%s' "$!" > "${WELLKNOWN}/http-server.pid"
         # Give node time to start
@@ -136,6 +136,7 @@ function clean_challenge {
 
 function deploy_cert {
     local DOMAIN="${1}" KEYFILE="${2}" CERTFILE="${3}" FULLCHAINFILE="${4}" CHAINFILE="${5}" TIMESTAMP="${6}"
+    export DOMAIN KEYFILE CERTFILE FULLCHAINFILE CHAINFILE TIMESTAMP
 
     # This hook is called once for each certificate that has been
     # produced. Here you might, for instance, copy your new certificates
@@ -162,6 +163,7 @@ function deploy_cert {
     if ! [[ -f $SSLBASE/dhparam.pem ]]; then
         openssl dhparam -out "$SSLBASE/dhparam.pem" -dsaparam 2048
     fi
+    #shellcheck disable=SC2153
     for service in "${SERVICES[@]}"; do
         restart_service "$service"
     done
@@ -192,6 +194,7 @@ function unchanged_cert {
 }
 
 # Get the global config variables
+# shellcheck disable=SC1090
 source "${CONFIG}"
 
-HANDLER=$1; shift; $HANDLER $@
+HANDLER=$1; shift; $HANDLER "$@"
