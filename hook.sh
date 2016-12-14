@@ -160,9 +160,12 @@ function deploy_cert {
     echo "HOOK: ${FUNCNAME[*]}"
 
     # Ensure we have a dhparam file
-    if ! [[ -f $SSLBASE/dhparam.pem ]]; then
-        openssl dhparam -out "$SSLBASE/dhparam.pem" -dsaparam 2048
+    DHFILE="$SSLBASE/dhparam.pem"
+    if ! [[ -f $DHFILE ]]; then
+        openssl dhparam -out "$DHFILE" -dsaparam 2048
     fi
+    # Create a fully bundled PEM, containing everything.
+    cat "$KEYFILE" "$FULLCHAINFILE" "$DHFILE" > "$CERTDIR/$DOMAIN/fullbundle.pem"
     #shellcheck disable=SC2153
     for service in "${SERVICES[@]}"; do
         restart_service "$service"
