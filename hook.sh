@@ -166,6 +166,8 @@ function deploy_cert {
     fi
     # Create a fully bundled PEM, containing everything.
     cat "$KEYFILE" "$FULLCHAINFILE" "$DHFILE" > "$CERTDIR/$DOMAIN/fullbundle.pem"
+    chown -R "${OWNER:-root}" "$CERTDIR"
+    chmod 0644 "$DHFILE"
     #shellcheck disable=SC2153
     for service in "${SERVICES[@]}"; do
         restart_service "$service"
