@@ -126,7 +126,12 @@ function clean_challenge {
     if [[ -f "${WELLKNOWN}/http-server.pid" ]]; then
         SERVER_PID=$(cat "${WELLKNOWN}/http-server.pid")
         kill "$SERVER_PID"
-        pwait "$SERVER_PID"
+        if command -v pwait; then
+            pwait "$SERVER_PID"
+        else
+            # Sigh.
+            sleep 10
+        fi
         rm "${WELLKNOWN}/http-server.pid"
     fi
     [[ -f "${WELLKNOWN}/${TOKEN_FILENAME}" ]] && rm "${WELLKNOWN:?}/${TOKEN_FILENAME:?}"
