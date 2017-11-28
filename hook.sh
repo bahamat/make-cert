@@ -108,7 +108,7 @@ deploy_challenge() {
             ;;
     esac
     if [[ -z $a ]]; then
-        http-server "${PWD}" -p 80 &
+        http-server "${PWD}" -a '::' -p 80 &
         # Store the PID to kill it in clean_challenge.
         printf '%s' "$!" > "${WELLKNOWN}/http-server.pid"
         # Give node time to start
