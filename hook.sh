@@ -10,7 +10,7 @@
 # Copyright 2016 Brian Bennett
 #
 
-function restart_service() {
+restart_service() {
     local SERVICE="${1}"
 
     # This hook is called once for each service to restart
@@ -23,8 +23,13 @@ function restart_service() {
     case "$uname_s" in
         SunOS)
             if svcs -H "${SERVICE}" | grep ^online; then
-                printf 'Restarting %s...' "${SERVICE}"
-                svcadm restart "${SERVICE}"
+                if svcprop -p refresh "${SERVICE}"; then
+                    printf 'Refreshing %s...' "${SERVICE}"
+                    svcadm refresh "${SERVICE}"
+                else
+                    printf 'Restarting %s...' "${SERVICE}"
+                    svcadm restart "${SERVICE}"
+                fi
                 printf 'done.\n'
             else
                 printf 'Service "%s" is not online, skipping.\n' "${service}"
@@ -60,7 +65,7 @@ function restart_service() {
 
 }
 
-function deploy_challenge {
+deploy_challenge() {
     local DOMAIN="${1}" TOKEN_FILENAME="${2}" TOKEN_VALUE="${3}"
 
     # This hook is called once for every domain that needs to be
@@ -113,7 +118,7 @@ function deploy_challenge {
     #echo "curl -i http://64.30.128.110/.well-known/acme-challenge/${TOKEN_FILENAME:?}"
 }
 
-function clean_challenge {
+clean_challenge() {
     local DOMAIN="${1}" TOKEN_FILENAME="${2}" TOKEN_VALUE="${3}"
 
     # This hook is called after attempting to validate each domain,
@@ -139,9 +144,8 @@ function clean_challenge {
 
 }
 
-function deploy_cert {
+deploy_cert() {
     local DOMAIN="${1}" KEYFILE="${2}" CERTFILE="${3}" FULLCHAINFILE="${4}" CHAINFILE="${5}" TIMESTAMP="${6}"
-    export DOMAIN KEYFILE CERTFILE FULLCHAINFILE CHAINFILE TIMESTAMP
 
     # This hook is called once for each certificate that has been
     # produced. Here you might, for instance, copy your new certificates
@@ -164,6 +168,7 @@ function deploy_cert {
 
     echo "HOOK: ${FUNCNAME[*]}"
 
+    export DOMAIN KEYFILE CERTFILE FULLCHAINFILE CHAINFILE TIMESTAMP
     # Ensure we have a dhparam file
     DHFILE="$SSLBASE/dhparam.pem"
     if ! [[ -f $DHFILE ]]; then
@@ -180,7 +185,7 @@ function deploy_cert {
 
 }
 
-function unchanged_cert {
+unchanged_cert() {
     local DOMAIN="${1}" KEYFILE="${2}" CERTFILE="${3}" FULLCHAINFILE="${4}" CHAINFILE="${5}"
 
     # This hook is called once for each certificate that is still
@@ -203,8 +208,68 @@ function unchanged_cert {
 
 }
 
+invalid_challenge() {
+    local DOMAIN="${1}" RESPONSE="${2}"
+
+    # This hook is called if the challenge response has failed, so domain
+    # owners can be aware and act accordingly.
+    #
+    # Parameters:
+    # - DOMAIN
+    #   The primary domain name, i.e. the certificate common
+    #   name (CN).
+    # - RESPONSE
+    #   The response that the verification server returned
+
+    echo "HOOK: ${FUNCNAME[*]}"
+
+}
+
+request_failure() {
+    local STATUSCODE="${1}" REASON="${2}" REQTYPE="${3}"
+
+    # This hook is called when an HTTP request fails (e.g., when the ACME
+    # server is busy, returns an error, etc). It will be called upon any
+    # response code that does not start with '2'. Useful to alert admins
+    # about problems with requests.
+    #
+    # Parameters:
+    # - STATUSCODE
+    #   The HTML status code that originated the error.
+    # - REASON
+    #   The specified reason for the error.
+    # - REQTYPE
+    #   The kind of request that was made (GET, POST...)
+
+    echo "HOOK: ${FUNCNAME[*]}"
+
+}
+
+startup_hook() {
+  # This hook is called before the cron command to do some initial tasks
+  # (e.g. starting a webserver).
+
+  :
+
+    echo "HOOK: ${FUNCNAME[*]}"
+
+}
+
+exit_hook() {
+  # This hook is called at the end of the cron command and can be used to
+  # do some final (cleanup or other) tasks.
+
+  :
+
+    echo "HOOK: ${FUNCNAME[*]}"
+
+}
+
 # Get the global config variables
 # shellcheck disable=SC1090
 source "${CONFIG}"
 
-HANDLER=$1; shift; $HANDLER "$@"
+HANDLER="$1"; shift
+if [[ "${HANDLER}" =~ ^(deploy_challenge|clean_challenge|deploy_cert|unchanged_cert|invalid_challenge|request_failure|startup_hook|exit_hook)$ ]]; then
+  "$HANDLER" "$@"
+fi

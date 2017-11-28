@@ -1,7 +1,7 @@
 PATH_OVERRIDE=/usr/xpg4/bin:$(PWD)/node_modules/http-server/bin:/opt/local/bin:$(PATH)
 FLAGS=
 
-.PHONY: all cert dep clean test
+.PHONY: all register cert dep clean test
 
 all: cert
 
@@ -14,7 +14,12 @@ node_modules:
 .dehydrated:
 	git clone https://github.com/bahamat/dehydrated .dehydrated
 
-cert: dep config.local config hook.sh domains.txt
+register: /opt/ssl/accounts
+
+/opt/ssl/accounts:
+	./.dehydrated/dehydrated --register --accept-terms
+
+cert: dep register config.local config hook.sh domains.txt
 	@PATH=$(PATH_OVERRIDE) ./.dehydrated/dehydrated -c $(FLAGS)
 
 test: dep config.test config hook.sh domains.txt
