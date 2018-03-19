@@ -172,7 +172,7 @@ deploy_cert() {
     # Ensure we have a dhparam file
     DHFILE="$SSLBASE/dhparam.pem"
     if ! [[ -f $DHFILE ]]; then
-        openssl dhparam -out "$DHFILE" -dsaparam 2048
+        openssl dhparam -out "$DHFILE" 2048
     fi
     # Create a fully bundled PEM, containing everything.
     cat "$KEYFILE" "$FULLCHAINFILE" "$DHFILE" > "$CERTDIR/$DOMAIN/fullbundle.pem"
