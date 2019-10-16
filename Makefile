@@ -1,12 +1,15 @@
 PATH_OVERRIDE=/usr/xpg4/bin:$(PWD)/node_modules/http-server/bin:/opt/local/bin:$(PATH)
+WELL_KNOWN=/opt/www/letsencrypt/.well-known/acme-challenge
 FLAGS=
 
 .PHONY: all register cert dep clean test
 
 all: cert
 
-dep: .dehydrated node_modules
-	mkdir -p /opt/ssl /opt/www/letsencrypt/.well-known/acme-challenge
+dep: .dehydrated node_modules $(WELL_KNOWN)
+
+$(WELL_KNOWN):
+	mkdir -p /opt/ssl $@
 
 node_modules:
 	npm install --progress=false http-server
