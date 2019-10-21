@@ -1,5 +1,5 @@
 PATH_OVERRIDE=/usr/xpg4/bin:$(PWD)/node_modules/http-server/bin:/opt/local/bin:$(PATH)
-WELL_KNOWN=/opt/www/letsencrypt/.well-known/acme-challenge
+WELL_KNOWN=/opt/www/dehydrated/.well-known/acme-challenge
 FLAGS=
 
 .PHONY: all register cert dep clean test

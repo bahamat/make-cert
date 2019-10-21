@@ -61,7 +61,7 @@ CERTDIR="$SSLBASE/certs"
 ACCOUNTDIR="$SSLBASE/accounts"
 
 # Output directory for challenge-tokens to be served by webserver or deployed in HOOK (default: /var/www/dehydrated)
-WEBROOT="/opt/www/letsencrypt"
+WEBROOT="/opt/www/dehydrated"
 WELLKNOWN="${WEBROOT}/.well-known/acme-challenge"
 #WELLKNOWN="/var/www/dehydrated"
 
