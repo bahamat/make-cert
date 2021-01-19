@@ -55,7 +55,7 @@ CHALLENGETYPE="http-01"
 #DOMAINS_TXT="${BASEDIR}/domains.txt"
 
 # Output directory for generated certificates
-CERTDIR="$SSLBASE/certs"
+CERTDIR="$SSLBASE"
 
 # Directory for account keys and registration information
 ACCOUNTDIR="$SSLBASE/accounts"
