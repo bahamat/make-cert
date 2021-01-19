@@ -10,6 +10,8 @@
 # Copyright 2016 Brian Bennett
 #
 
+export PATH=/usr/xpg4/bin:${PWD}/node_modules/http-server/bin:/opt/local/bin:${PATH}
+
 restart_service() {
     local SERVICE="${1}"
 
