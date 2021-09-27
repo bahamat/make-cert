@@ -62,7 +62,7 @@ made.
 
 1. Node.js and npm are installed and in the default `$PATH`.
 2. Certificate challenges will be handled by HTTP, not DNS.
-3. A web root of`/opt/www/letsencrypt` is used for the location of
+3. A web root of`/opt/www/dehydrated` is used for the location of
    `.well-known`. This will be created if it does not exist. There are example
    web server virtualhost configuration files for Apache and Nginx that are
    preconfigured for this location.
@@ -87,7 +87,7 @@ platforms is a matter of properly detecting something listening on port 80 in
 Application restart support is limited to Apache and Nginx on SmartOS (see
 issues).
 
-# License
+## License
 
 The following files are licensed under the MPL-2.0 license. See `LICENSE.mpl-2`
 for details.

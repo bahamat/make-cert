@@ -12,6 +12,10 @@
 
 export PATH=/usr/xpg4/bin:${PWD}/node_modules/http-server/bin:/opt/local/bin:${PATH}
 
+# Get the global config variables
+# shellcheck source=config.test
+source "${CONFIG:-config}"
+
 restart_service() {
     local SERVICE="${1}"
 
@@ -108,14 +112,29 @@ deploy_challenge() {
         Linux)
             a=$(netstat -natl | awk '{if ($4~":80$") {print $4}}')
             ;;
+        *)
+            printf 'What OS is this?\n'
+            exit 1
+            ;;
     esac
-    if [[ -z $a ]]; then
-        http-server "${PWD}" -a '::' -p 80 &
-        # Store the PID to kill it in clean_challenge.
-        printf '%s' "$!" > "${WELLKNOWN}/http-server.pid"
-        # Give node time to start
-        sleep 10
-    fi
+    case $CHALLENGETYPE in
+        http-01)
+            if [[ -z $a ]]; then
+                http-server "${PWD}" -a '::' -p 80 &
+                # Store the PID to kill it in clean_challenge.
+                echo "$PWD"
+                printf '%s' "$!" > "${WELLKNOWN}/http-server.pid"
+                # Give node time to start
+                sleep 10
+            fi
+            ;;
+        dns-01)
+            printf 'dns-01 not yet supported\n' ;;
+        tls-alpn-01)
+            printf 'ok, do the new thing\n' ;;
+        *)
+            printf 'Unknown challenge type: %s\n' "$CHALLENGETYPE"
+    esac
     #echo "Listening in ${PWD}"
     #echo "curl -i http://64.30.128.110/.well-known/acme-challenge/${TOKEN_FILENAME:?}"
 }
@@ -224,6 +243,7 @@ invalid_challenge() {
     #   The response that the verification server returned
 
     echo "HOOK: ${FUNCNAME[*]}"
+    printf 'Invalid challenge: %s\n' "$RESPONSE"
 
 }
 
@@ -244,6 +264,10 @@ request_failure() {
     #   The kind of request that was made (GET, POST...)
 
     echo "HOOK: ${FUNCNAME[*]}"
+    printf 'Request failed:\n'
+    printf '\tTYPE: %s\n' "$REQTYPE"
+    printf '\tSTATUS: %s\n' "$STATUSCODE"
+    printf '\tt%s\n' "$REASON"
 
 }
 
@@ -266,10 +290,6 @@ exit_hook() {
     echo "HOOK: ${FUNCNAME[*]}"
 
 }
-
-# Get the global config variables
-# shellcheck disable=SC1090
-source "${CONFIG:-config}"
 
 HANDLER="$1"; shift
 if [[ "${HANDLER}" =~ ^(deploy_challenge|clean_challenge|deploy_cert|unchanged_cert|invalid_challenge|request_failure|startup_hook|exit_hook)$ ]]; then

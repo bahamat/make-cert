@@ -1,4 +1,4 @@
-CA="$staging_ca"
+CA="letsencrypt-test"
 CONTACT_EMAIL="nobody@nowhere.edu"
 # These services will be restarted
 SERVICES=( nginx apache )

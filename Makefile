@@ -23,11 +23,13 @@ register: /opt/ssl/accounts
 	./.dehydrated/dehydrated --register --accept-terms
 
 cert: dep register config.local config hook.sh domains.txt
-	@PATH=$(PATH_OVERRIDE) ./.dehydrated/dehydrated -c $(FLAGS)
+	@PATH="$(PATH_OVERRIDE)" ./.dehydrated/dehydrated -c $(FLAGS)
 
 test: dep config.test config hook.sh domains.txt
-	@shellcheck hook.sh
-	@PATH=$(PATH_OVERRIDE) ./.dehydrated/dehydrated -c --config config.test -6 $(FLAGS)
+	@shellcheck -x hook.sh
+	@mkdir -p webroot/dehydrated/.well-known/acme-challenge
+	@PATH="$(PATH_OVERRIDE)" ./.dehydrated/dehydrated --register --accept-terms --config config.test -6 $(FLAGS)
+	@PATH="$(PATH_OVERRIDE)" ./.dehydrated/dehydrated -c --config config.test -6 $(FLAGS)
 	openssl x509 -text -noout -in certs/$$(cat domains.txt)/cert.pem
 
 distclean: depclean clean
@@ -36,4 +38,4 @@ depclean:
 	rm -rf .dehydrated node_modules
 
 clean:
-	rm -rf accounts certs private_key.json private_key.pem
+	rm -rf accounts certs webroot lock

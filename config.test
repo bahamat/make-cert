@@ -1,91 +1,36 @@
 #!/usr/bin/env bash
 
-########################################################
-# This is the main config file for letsencrypt.sh      #
-#                                                      #
-# This file is looked for in the following locations:  #
-# $SCRIPTDIR/config.sh (next to this script)           #
-# /usr/local/etc/letsencrypt.sh/config.sh              #
-# /etc/letsencrypt.sh/config.sh                        #
-# ${PWD}/config.sh (in current working-directory)      #
-#                                                      #
-# Default values of this config are in comments        #
-########################################################
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+#
+# Copyright 2021 Brian Bennett
+#
+
+# Source defaults
+source .dehydrated/docs/examples/config
 
 source trace_logger.sh
 source error_handler.sh
 
-# Path to certificate authority (default: https://acme-v01.api.letsencrypt.org/directory)
-prod_ca="https://acme-v01.api.letsencrypt.org/directory"
-staging_ca="https://acme-staging.api.letsencrypt.org/directory"
-CA="$staging_ca"
+# make-cert base for SSL certs
+SSLBASE=${PWD}/certs
 
-# Path to license agreement (default: https://letsencrypt.org/documents/LE-SA-v1.0.1-July-27-2015.pdf)
-#LICENSE="https://letsencrypt.org/documents/LE-SA-v1.0.1-July-27-2015.pdf"
-
-# Which challenge should be used? Currently http-01 and dns-01 are supported
+# See .dehydrated/docs/example/config for descriptions of the following
+# options.
+CA="letsencrypt-test"
 CHALLENGETYPE="http-01"
-
-# Path to a directory containing additional config files, allowing to override
-# the defaults found in the main configuration file. Additional config files
-# in this directory needs to be named with a '.sh' ending.
-# default: <unset>
-#CONFIG_D=
-
-# Base directory for account key, generated certificates and list of domains (default: $SCRIPTDIR -- uses config directory if undefined)
-#BASEDIR=$SCRIPTDIR
-
-# Output directory for challenge-tokens to be served by webserver or deployed in HOOK (default: $BASEDIR/.acme-challenges)
-WEBROOT="/opt/www/letsencrypt"
+CERTDIR="$SSLBASE"
+ACCOUNTDIR="${SSLBASE}/accounts"
+ALPNCERTDIR="${SSLBASE}/alpn-certs"
+WEBROOT="${PWD}/webroot/dehydrated"
 WELLKNOWN="${WEBROOT}/.well-known/acme-challenge"
+HOOK="${BASEDIR:-$PWD}/hook.sh"
+KEY_ALGO=secp384r1
 
-# Location of private account key (default: $BASEDIR/private_key.pem)
-#ACCOUNT_KEY="${BASEDIR}/private_key.pem"
+: $CA $CHALLENGETYPE $CERTDIR $ACCOUNTDIR $ALPNCERTDIR $WELLKNOWN "$HOOK" $KEY_ALGO
 
-# Location of private account registration information (default: $BASEDIR/private_key.json)
-#ACCOUNT_KEY_JSON="${BASEDIR}/private_key.json"
-
-# Default keysize for private keys (default: 4096)
-#KEYSIZE="4096"
-
-# Path to openssl config file (default: <unset> - tries to figure out system default)
-#OPENSSL_CNF=
-
-# Program or function called in certain situations
-#
-# After generating the challenge-response, or after failed challenge (in this case altname is empty)
-# Given arguments: clean_challenge|deploy_challenge altname token-filename token-content
-#
-# After successfully signing certificate
-# Given arguments: deploy_cert domain path/to/privkey.pem path/to/cert.pem path/to/fullchain.pem
-#
-# BASEDIR and WELLKNOWN variables are exported and can be used in an external program
-# default: <unset>
-HOOK=$BASEDIR/hook.sh
-
-# Chain clean_challenge|deploy_challenge arguments together into one hook call per certificate (default: no)
-#HOOK_CHAIN="no"
-
-# Minimum days before expiration to automatically renew certificate (default: 30)
-#RENEW_DAYS="30"
-
-# Regenerate private keys instead of just signing new certificates on renewal (default: no)
-#PRIVATE_KEY_RENEW="no"
-
-# Which public key algorithm should be used? Supported: rsa, prime256v1 and secp384r1
-KEY_ALGO=prime256v1
-
-# E-mail to use during the registration (default: <unset>)
-CONTACT_EMAIL='test@b.digitalelf.net'
-
-# Lockfile location, to prevent concurrent access (default: $BASEDIR/lock)
-#LOCKFILE="${BASEDIR}/lock"
-
-# My base for SSL certs
-SSLBASE="${BASEDIR}/certs"
-
-# Certificate directory. (defalut: $BASEDIR/certs)
-CERTDIR="${BASEDIR}/certs"
-
-# Account directory. (defalut: $BASEDIR/accounts)
-ACCOUNTDIR="$BASEDIR/accounts"
+# Now source user-local config directives.
+source config.local.example
