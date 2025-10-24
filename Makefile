@@ -10,19 +10,20 @@ dep: .dehydrated node_modules $(WELL_KNOWN)
 
 $(WELL_KNOWN):
 	mkdir -p /opt/ssl $@
+	mkdir -p $(WELL_KNOWN)
 
 node_modules:
 	npm install --progress=false http-server
 
 .dehydrated:
-	git clone https://github.com/bahamat/dehydrated .dehydrated
+	git clone https://github.com/dehydrated-io/dehydrated .dehydrated
 
 register: /opt/ssl/accounts
 
-/opt/ssl/accounts:
+/opt/ssl/accounts: .dehydrated
 	./.dehydrated/dehydrated --register --accept-terms
 
-cert: dep register config.local config hook.sh domains.txt
+cert: dep register config.local config hook.sh domains.txt $(WELL_KNOWN)
 	@PATH="$(PATH_OVERRIDE)" ./.dehydrated/dehydrated -c $(FLAGS)
 
 test: dep config.test config hook.sh domains.txt

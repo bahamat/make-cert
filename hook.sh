@@ -162,7 +162,6 @@ clean_challenge() {
     fi
     [[ -f "${WELLKNOWN}/${TOKEN_FILENAME}" ]] && rm "${WELLKNOWN:?}/${TOKEN_FILENAME:?}"
     true
-
 }
 
 deploy_cert() {
